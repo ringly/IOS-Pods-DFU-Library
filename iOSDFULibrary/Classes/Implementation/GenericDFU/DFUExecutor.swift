@@ -129,7 +129,7 @@ extension BaseDFUExecutor {
 
 internal protocol DFUExecutorAPI : BaseExecutorAPI {
     /// Required constructor
-    init(_ initiator:DFUServiceInitiator)
+    init(_ initiator:DFUServiceInitiator, controlPointCharacteristicUUID: CBUUID, packetCharacteristicUUID: CBUUID)
 }
 
 internal protocol DFUExecutor : DFUExecutorAPI, BaseDFUExecutor, DFUPeripheralDelegate {

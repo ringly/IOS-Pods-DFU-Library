@@ -31,7 +31,7 @@ import CoreBluetooth
             return nil
         }
         
-        let executor = LegacyDFUExecutor(self)
+        let executor = LegacyDFUExecutor(self, controlPointCharacteristicUUID: controlPointCharacteristicUUID, packetCharacteristicUUID: packetCharacteristicUUID)
         let controller = DFUServiceController()
         controller.executor = executor
         executor.start()

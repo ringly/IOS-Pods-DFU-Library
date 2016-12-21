@@ -86,11 +86,16 @@ internal class BaseDFUPeripheral<TD : BasePeripheralDelegate> : NSObject, BaseDF
     
     /// A flag set when upload has been aborted.
     fileprivate var aborted: Bool = false
+
+    internal let controlPointCharacteristicUUID: CBUUID
+    internal let packetCharacteristicUUID: CBUUID
     
-    init(_ initiator: DFUServiceInitiator) {
+    init(_ initiator: DFUServiceInitiator, controlPointCharacteristicUUID: CBUUID, packetCharacteristicUUID: CBUUID) {
         self.centralManager = initiator.centralManager
         self.logger = LoggerHelper(initiator.logger)
         self.experimentalButtonlessServiceInSecureDfuEnabled = initiator.enableUnsafeExperimentalButtonlessServiceInSecureDfu
+        self.controlPointCharacteristicUUID = controlPointCharacteristicUUID
+        self.packetCharacteristicUUID = packetCharacteristicUUID
         super.init()
         // Set the initial peripheral. It may be changed later (flashing App fw after first flashing SD/BL)
         self.peripheral = initiator.target
@@ -431,15 +436,15 @@ internal class BaseCommonDFUPeripheral<TD : DFUPeripheralDelegate, TS : DFUServi
     /// The service will scan and use specified peripheral selector in order to connect to the new peripheral.
     internal var newAddressExpected  : Bool = false
     
-    override init(_ initiator: DFUServiceInitiator) {
+    override init(_ initiator: DFUServiceInitiator, controlPointCharacteristicUUID: CBUUID, packetCharacteristicUUID: CBUUID) {
         self.peripheralSelector = initiator.peripheralSelector
-        super.init(initiator)
+        super.init(initiator, controlPointCharacteristicUUID: controlPointCharacteristicUUID, packetCharacteristicUUID: packetCharacteristicUUID)
     }
     
     // MARK: - Base DFU Peripheral API
     
     override func peripheralDidDiscoverDfuService(_ service: CBService) {
-        dfuService = DFUServiceType(service, logger)
+        dfuService = DFUServiceType(service, logger, controlPointCharacteristicUUID: controlPointCharacteristicUUID, packetCharacteristicUUID: packetCharacteristicUUID)
         dfuService!.targetPeripheral = self
         dfuService!.discoverCharacteristics(
             onSuccess: { self.delegate?.peripheralDidBecomeReady() },

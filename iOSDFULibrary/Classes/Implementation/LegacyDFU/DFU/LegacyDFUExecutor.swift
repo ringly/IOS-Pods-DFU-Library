@@ -20,6 +20,8 @@
 * USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+import CoreBluetooth
+
 internal class LegacyDFUExecutor : DFUExecutor, LegacyDFUPeripheralDelegate {
     typealias DFUPeripheralType = LegacyDFUPeripheral
     
@@ -31,13 +33,22 @@ internal class LegacyDFUExecutor : DFUExecutor, LegacyDFUPeripheralDelegate {
     /// Retry counter for peripheral invalid state issue
     private let MaxRetryCount = 1
     private var invalidStateRetryCount: Int
+
+    /// The DFU control point characteristic UUID to search for
+    internal let controlPointCharacteristicUUID: CBUUID
+
+    /// The DFU packet characteristic UUID to search for
+    internal let packetCharacteristicUUID: CBUUID
     
     // MARK: - Initialization
     
-    required init(_ initiator:DFUServiceInitiator) {
+    required init(_ initiator:DFUServiceInitiator, controlPointCharacteristicUUID: CBUUID, packetCharacteristicUUID: CBUUID) {
         self.initiator  = initiator
-        self.peripheral = LegacyDFUPeripheral(initiator)
+        self.peripheral = LegacyDFUPeripheral(initiator, controlPointCharacteristicUUID: controlPointCharacteristicUUID, packetCharacteristicUUID: packetCharacteristicUUID)
         self.firmware   = initiator.file!
+
+        self.controlPointCharacteristicUUID = controlPointCharacteristicUUID
+        self.packetCharacteristicUUID = packetCharacteristicUUID
         
         self.invalidStateRetryCount = MaxRetryCount
         self.peripheral.delegate = self

@@ -55,6 +55,9 @@ import CoreBluetooth
     private var report:  ErrorCallback?
     /// A temporaty callback used to report progress status.
     private var progressDelegate: DFUProgressDelegate?
+
+    private let packetCharacteristicUUID: CBUUID
+    private let controlPointCharacteristicUUID: CBUUID
     
     // -- Properties stored when upload started in order to resume it --
     private var firmware: DFUFirmware?
@@ -63,9 +66,11 @@ import CoreBluetooth
     
     // MARK: - Initialization
     
-    required init(_ service:CBService, _ logger:LoggerHelper) {
+    required init(_ service:CBService, _ logger:LoggerHelper, controlPointCharacteristicUUID: CBUUID, packetCharacteristicUUID: CBUUID) {
         self.service = service
         self.logger = logger
+        self.packetCharacteristicUUID = packetCharacteristicUUID
+        self.controlPointCharacteristicUUID = controlPointCharacteristicUUID
         super.init()
         self.logger.v("Legacy DFU Service found")
     }
@@ -487,9 +492,9 @@ import CoreBluetooth
             
             // Find DFU characteristics
             for characteristic in service.characteristics! {
-                if (DFUPacket.matches(characteristic)) {
+                if (characteristic == packetCharacteristicUUID) {
                     dfuPacketCharacteristic = DFUPacket(characteristic, logger)
-                } else if (DFUControlPoint.matches(characteristic)) {
+                } else if (characteristic == controlPointCharacteristicUUID) {
                     dfuControlPointCharacteristic = DFUControlPoint(characteristic, logger)
                 } else if (DFUVersion.matches(characteristic)) {
                     dfuVersionCharacteristic = DFUVersion(characteristic, logger)

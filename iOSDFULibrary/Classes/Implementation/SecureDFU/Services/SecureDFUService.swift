@@ -56,7 +56,7 @@ import CoreBluetooth
     
     // MARK: - Initialization
     
-    required init(_ service: CBService, _ logger: LoggerHelper) {
+    required init(_ service: CBService, _ logger: LoggerHelper, controlPointCharacteristicUUID: CBUUID, packetCharacteristicUUID: CBUUID) {
         self.service = service
         self.logger = logger
         super.init()

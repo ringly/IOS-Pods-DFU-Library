@@ -31,7 +31,7 @@ import CoreBluetooth
             return nil
         }
         
-        let executor = SecureDFUExecutor(self)
+        let executor = SecureDFUExecutor(self, controlPointCharacteristicUUID: controlPointCharacteristicUUID, packetCharacteristicUUID: packetCharacteristicUUID)
         let controller = DFUServiceController()
         controller.executor = executor
         executor.start()

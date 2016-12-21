@@ -23,11 +23,7 @@
 import CoreBluetooth
 
 internal class DFUPacket {
-    static fileprivate let UUID = CBUUID(string: "00001532-1212-EFDE-1523-785FEABCD123")
-    
-    static func matches(_ characteristic: CBCharacteristic) -> Bool {
-        return characteristic.uuid.isEqual(UUID)
-    }
+    static let defaultUUID = CBUUID(string: "00001532-1212-EFDE-1523-785FEABCD123")
     
     private let PacketSize: UInt32 = 20
     
@@ -75,8 +71,8 @@ internal class DFUPacket {
         data.append(blArray, count:4)
         data.append(appArray, count:4)
 
-        logger.v("Writing image sizes (\(size.softdevice)b, \(size.bootloader)b, \(size.application)b) to characteristic \(DFUPacket.UUID.uuidString)...")
-        logger.d("peripheral.writeValue(0x\(data.hexString), for: \(DFUPacket.UUID.uuidString), type: .withoutResponse)")
+        logger.v("Writing image sizes (\(size.softdevice)b, \(size.bootloader)b, \(size.application)b) to characteristic \(characteristic.uuid.uuidString)...")
+        logger.d("peripheral.writeValue(0x\(data.hexString), for: \(characteristic.uuid.uuidString), type: .withoutResponse)")
         peripheral.writeValue(data, for: characteristic, type: .withoutResponse)
     }
     
@@ -108,8 +104,8 @@ internal class DFUPacket {
         let appSize  = size.application.littleEndian
         let appArray = convertLittleEndianToByteArray(littleEndian: appSize)
         data.append(appArray, count:4)
-        logger.v("Writing image size (\(size.application)b) to characteristic \(DFUPacket.UUID.uuidString)...")
-        logger.d("peripheral.writeValue(0x\(data.hexString), for: \(DFUPacket.UUID.uuidString), type: .withoutResponse)")
+        logger.v("Writing image size (\(size.application)b) to characteristic \(characteristic.uuid.uuidString)...")
+        logger.d("peripheral.writeValue(0x\(data.hexString), for: \(characteristic.uuid.uuidString), type: .withoutResponse)")
         peripheral.writeValue(data, for: characteristic, type: .withoutResponse)
     }
     
@@ -129,8 +125,8 @@ internal class DFUPacket {
         repeat {
             let packetLength = min(bytesToSend, PacketSize)
             let packet = data.subdata(in: Int(offset) ..< Int(offset + packetLength))
-            logger.v("Writing to characteristic \(DFUPacket.UUID.uuidString)...")
-            logger.d("peripheral.writeValue(0x\(packet.hexString), for: \(DFUPacket.UUID.uuidString), type: .withoutResponse)")
+            logger.v("Writing to characteristic \(characteristic.uuid.uuidString)...")
+            logger.d("peripheral.writeValue(0x\(packet.hexString), for: \(characteristic.uuid.uuidString), type: .withoutResponse)")
             peripheral.writeValue(packet, for: characteristic, type: .withoutResponse)
             
             offset += packetLength

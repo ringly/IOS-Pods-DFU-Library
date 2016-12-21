@@ -195,11 +195,7 @@ internal struct PacketReceiptNotification {
 }
 
 @objc internal class DFUControlPoint : NSObject, CBPeripheralDelegate {
-    static let UUID = CBUUID(string: "00001531-1212-EFDE-1523-785FEABCD123")
-    
-    static func matches(_ characteristic: CBCharacteristic) -> Bool {
-        return characteristic.uuid.isEqual(UUID)
-    }
+    static let defaultUUID = CBUUID(string: "00001531-1212-EFDE-1523-785FEABCD123")
     
     private var characteristic: CBCharacteristic
     private var logger: LoggerHelper
@@ -330,7 +326,7 @@ internal struct PacketReceiptNotification {
         // This method, according to the iOS documentation, should be called only after writing with response to a characteristic.
         // However, on iOS 10 this method is called even after writing without response, which is a bug.
         // The DFU Control Point characteristic always writes with response, in oppose to the DFU Packet, which uses write without response.
-        if characteristic.uuid.isEqual(DFUControlPoint.UUID) == false {
+        if characteristic.uuid.isEqual(self.characteristic.uuid) == false {
             return
         }
         

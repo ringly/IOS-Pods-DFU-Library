@@ -20,6 +20,8 @@
  * USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import CoreBluetooth
+
 internal class SecureDFUExecutor : DFUExecutor, SecureDFUPeripheralDelegate {
     typealias DFUPeripheralType = SecureDFUPeripheral
     
@@ -44,10 +46,10 @@ internal class SecureDFUExecutor : DFUExecutor, SecureDFUPeripheralDelegate {
     private var retryCount: Int
     
     // MARK: - Initialization
-    required init(_ initiator:DFUServiceInitiator) {
+    required init(_ initiator:DFUServiceInitiator, controlPointCharacteristicUUID: CBUUID, packetCharacteristicUUID: CBUUID) {
         self.initiator  = initiator
         self.firmware   = initiator.file!
-        self.peripheral = SecureDFUPeripheral(initiator)
+        self.peripheral = SecureDFUPeripheral(initiator, controlPointCharacteristicUUID: controlPointCharacteristicUUID, packetCharacteristicUUID: packetCharacteristicUUID)
         
         self.retryCount = MaxRetryCount
         self.peripheral.delegate = self

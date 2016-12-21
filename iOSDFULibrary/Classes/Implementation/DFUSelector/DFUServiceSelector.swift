@@ -40,12 +40,16 @@ internal class DFUServiceSelector : BaseDFUExecutor, DFUStarterPeripheralDelegat
     internal let initiator:  DFUServiceInitiator
     internal let controller: DFUServiceController
     internal let peripheral: DFUStarterPeripheral
+    internal let controlPointCharacteristicUUID: CBUUID
+    internal let packetCharacteristicUUID: CBUUID
     internal var error: (error:DFUError, message:String)?
     
-    init(initiator: DFUServiceInitiator, controller: DFUServiceController) {
+    init(initiator: DFUServiceInitiator, controller: DFUServiceController, controlPointCharacteristicUUID: CBUUID, packetCharacteristicUUID: CBUUID) {
         self.initiator  = initiator
         self.controller = controller
-        self.peripheral = DFUStarterPeripheral(initiator)
+        self.peripheral = DFUStarterPeripheral(initiator, controlPointCharacteristicUUID: controlPointCharacteristicUUID, packetCharacteristicUUID: packetCharacteristicUUID)
+        self.controlPointCharacteristicUUID = controlPointCharacteristicUUID
+        self.packetCharacteristicUUID = packetCharacteristicUUID
         
         self.peripheral.delegate = self
     }
@@ -61,7 +65,7 @@ internal class DFUServiceSelector : BaseDFUExecutor, DFUStarterPeripheralDelegat
         // Release the cyclic reference
         peripheral.destroy()
         
-        let executor = ExecutorType.init(initiator)
+        let executor = ExecutorType.init(initiator, controlPointCharacteristicUUID: controlPointCharacteristicUUID, packetCharacteristicUUID: packetCharacteristicUUID)
         controller.executor = executor
         executor.start()
     }

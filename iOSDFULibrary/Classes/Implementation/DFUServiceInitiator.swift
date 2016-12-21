@@ -53,6 +53,12 @@ import CoreBluetooth
      The logger is an object that should print given messages to the user. It is optional.
      */
     public weak var logger: LoggerDelegate?
+
+    /// The DFU control point characteristic UUID to search for
+    public var controlPointCharacteristicUUID = DFUControlPoint.defaultUUID
+
+    /// The DFU packet characteristic UUID to search for
+    public var packetCharacteristicUUID = DFUPacket.defaultUUID
     
     /**
      The selector object is used when the device needs to disconnect and start advertising with a different address
@@ -227,7 +233,7 @@ import CoreBluetooth
         }
 
         let controller = DFUServiceController()
-        let selector = DFUServiceSelector(initiator: self, controller: controller)
+        let selector = DFUServiceSelector(initiator: self, controller: controller, controlPointCharacteristicUUID: controlPointCharacteristicUUID, packetCharacteristicUUID: packetCharacteristicUUID)
         controller.executor = selector
         selector.start()
         
